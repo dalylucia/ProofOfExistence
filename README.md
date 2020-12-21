@@ -1,1 +1,1 @@
-# ProofOfExiatence
+# ProofOfExistence
