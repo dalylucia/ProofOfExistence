@@ -1,0 +1,134 @@
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    min-width: 100%;
+    margin-top: 20px;
+  }
+
+  .tags {
+      min-width: 450px;
+  }
+
+  @media (max-width: 768px) {
+
+    .tags {
+        min-width: auto;
+    }
+
+  }
+
+  @media (max-width: 425px) {
+
+    .tags {
+        min-width: 100%;
+    }
+  }
+  
+  .tags__title {
+    color: #89949f;
+    font-size: 1.8rem;
+    font-weight: 200;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .tags__content {
+    font-size: 16px;
+    background-color: #fff;
+    border: 1px solid #2e83ef;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100% !important;
+    height: 60px;
+  }
+  .tags__item {
+    padding: 0.1em 1em 0.3em 1em;
+    color: #fff;
+    background: #037DE4;
+    margin: 0.6rem 0 0.5rem 0.5rem !important;
+    border-radius: 10em;
+    height: auto;
+    min-width: 100px;
+  }
+  .tags__list {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .tags__group {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    height: 60px;
+  }
+  .tags__suggestions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: white;
+    transform: translate3d(0, 100%, 0);
+    padding: 1rem;
+    width: 100%;
+    border: 1px solid #cfcfcf;
+  }
+
+  .tags__inner {
+      padding-bottom: 0.8em;
+  }
+  .tags__text {
+    font-size: 16px;
+    background: none;
+    border: none;
+    flex-grow: 1;
+    height: 60px;
+    padding-left: 15px;
+  }
+  .tags__text::placeholder {
+    font-weight: 200;
+    color: #89949f;
+  }
+  .tags__text:focus {
+    outline: none;
+  }
+
+  @media (max-width: 425px) {
+
+    .tags__text {
+        font-size: 12px;
+    }
+
+  }
+
+  .tags__remove {
+    background: none;
+    border: none;
+    color: #83c5fd;
+    line-height: 1;
+    font-size: 1rem;
+    padding: 0.2em 0.1em 0.1em 1em;
+    margin-right: 0rem;
+    cursor: pointer;
+  }
+  .tags__remove:hover, .tags__remove:focus {
+    color: #e7f4ff;
+  }
+  .tags__remove:focus {
+    outline: none;
+  }
+  .tags__empty {
+    border: none;
+    font-size: 1.5rem;
+    padding: 9px;
+    padding-right: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: #89949f;
+    background-color: transparent;
+  }
+  .tags__empty:hover, .tags__empty:focus {
+    color: #83c5fd;
+  }
+  .tags__empty:focus {
+    outline: none;
+  }
