@@ -1,5 +1,5 @@
-var Adoption = artifacts.require("Adoption");
+var ProofOfExistence = artifacts.require("./ProofOfExistence");
 
 module.exports = function(deployer) {
-  deployer.deploy(Adoption);
+  deployer.deploy(ProofOfExistence);
 };

@@ -1,27 +1,11 @@
+
+// const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
+ 
 App = {
   web3Provider: null,
   contracts: {},
+  
 
-  init: async function() {
-    // Load pets.
-    $.getJSON('../pets.json', function(data) {
-      var petsRow = $('#petsRow');
-      var petTemplate = $('#petTemplate');
-
-      for (i = 0; i < data.length; i ++) {
-        petTemplate.find('.panel-title').text(data[i].name);
-        petTemplate.find('img').attr('src', data[i].picture);
-        petTemplate.find('.pet-breed').text(data[i].breed);
-        petTemplate.find('.pet-age').text(data[i].age);
-        petTemplate.find('.pet-location').text(data[i].location);
-        petTemplate.find('.btn-adopt').attr('data-id', data[i].id);
-
-        petsRow.append(petTemplate.html());
-      }
-    });
-
-    return await App.initWeb3();
-  },
 
   initWeb3: async function() {
     // Modern dapp browsers...
@@ -48,12 +32,9 @@ App = {
     return App.initContract();
   },
 
-  toHome: function() {
-    console.log("redirect");
-  },
 
   initContract: function() {
-    $.getJSON('Adoption.json', function(data) {
+    $.getJSON('ProofOfExistence.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
       var AdoptionArtifact = data;
       App.contracts.Adoption = TruffleContract(AdoptionArtifact);
@@ -121,7 +102,7 @@ App = {
 
 $(function() {
   $(window).load(function() {
-    App.init();
+    App.initWeb3();
   });
 });
 
@@ -136,17 +117,16 @@ function toHome() {
     console.log("Couldn't retrieve accounts! Make sure you have logged in to Metamask.")
   } else {
     window.location = "dashboard.html";
+    document.getElementById("ownerAddress").innerHTML = account;
   }
 
 
 }
 
-
 var account = web3.eth.accounts[0];
 var accountInterval = setInterval(function() {
   if (web3.eth.accounts[0] !== account) {
     account = web3.eth.accounts[0];
-    console.log(window.location)
     if (window.location.href == "http://localhost:3000/dashboard.html") {
       document.getElementById("ownerAddress").innerHTML = account;
     }
