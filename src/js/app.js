@@ -34,69 +34,71 @@ App = {
 
 
   initContract: function() {
-    $.getJSON('ProofOfExistence.json', function(data) {
+    contract = $.getJSON('Blockproof.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
-      var AdoptionArtifact = data;
-      App.contracts.Adoption = TruffleContract(AdoptionArtifact);
+      var BpArtifact = data;
+      App.contracts.BlockProof = TruffleContract(BpArtifact);
 
       // Set the provider for our contract
-      App.contracts.Adoption.setProvider(App.web3Provider);
-
+      App.contracts.BlockProof.setProvider(App.web3Provider);
       // Use our contract to retrieve and mark the adopted pets
-      return App.markAdopted();
+      return App.contracts.BlockProof
     });
-
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
+    $(document).on('click', "#createProof", App.saveProofToBlockchain);
   },
 
-  markAdopted: function() {
-    var adoptionInstance;
-
-    App.contracts.Adoption.deployed().then(function(instance) {
-      adoptionInstance = instance;
-
-      return adoptionInstance.getAdopters.call();
-    }).then(function(adopters) {
-      for (i = 0; i < adopters.length; i++) {
-        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
-          $('.panel-pet').eq(i).find('button').text('Success').attr('disabled', true);
-        }
-      }
-    }).catch(function(err) {
-      console.log(err.message);
+  saveProofToBlockchain: function() {
+    // test proof
+    var proof = '{ "test_proof" : [' +
+    '{ "title":"test_title" , "ipfs_hash":"12343434" , "summary": "testsummary", "tags" :"t1, t2" }]}';
+    var obj = JSON.parse(proof);
+    var params = obj.test_proof["0"]
+    
+    console.log(params["title"])
+    App.contracts.BlockProof.deployed().then(function(i) {
+      i.createProof(params["title"], params["ipfs_hash"], params["summary"], params["tags"], {
+        from: web3.eth.accounts[0]
+      })
+        .then(proofCreated)
+        .catch(function(e) {
+          // $("#loader").hide();
+          // $("#fail").show();
+          // $("#fail").html(e.message);
+          // $("#createproofbutton").attr("disabled", false);
+        });
     });
   },
 
-  handleAdopt: function(event) {
-    event.preventDefault();
+  // handleAdopt: function(event) {
+  //   event.preventDefault();
 
-    var petId = parseInt($(event.target).data('id'));
+  //   var petId = parseInt($(event.target).data('id'));
 
-    var adoptionInstance;
+  //   var adoptionInstance;
 
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
+  //   web3.eth.getAccounts(function(error, accounts) {
+  //     if (error) {
+  //       console.log(error);
+  //     }
 
-      var account = accounts[0];
+  //     var account = accounts[0];
 
-      App.contracts.Adoption.deployed().then(function(instance) {
-        adoptionInstance = instance;
+  //     App.contracts.Adoption.deployed().then(function(instance) {
+  //       adoptionInstance = instance;
 
-        // Execute adopt as a transaction by sending account
-        return adoptionInstance.adopt(petId, {from: account});
-      }).then(function(result) {
-        return App.markAdopted();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
-  }
+  //       // Execute adopt as a transaction by sending account
+  //       return adoptionInstance.adopt(petId, {from: account});
+  //     }).then(function(result) {
+  //       return App.markAdopted();
+  //     }).catch(function(err) {
+  //       console.log(err.message);
+  //     });
+  //   });
+  // }
 
 };
 
@@ -117,7 +119,7 @@ function toHome() {
     console.log("Couldn't retrieve accounts! Make sure you have logged in to Metamask.")
   } else {
     window.location = "dashboard.html";
-    document.getElementById("ownerAddress").innerHTML = account;
+    // document.getElementById("ownerAddress").innerHTML = account;
   }
 
 
@@ -133,3 +135,24 @@ var accountInterval = setInterval(function() {
       
   }
 }, 1);
+
+
+
+function proofCreated() {
+  let proofEvent;
+  contract.Blockproof.deployed().then(function(i) {
+    proofEvent = i.newProofCreated({ fromBlock: 0, toBlock: "latest" });
+    // proofEvent.watch(function(err, result) {
+    //   if (err) {
+    //     $("#loader").hide();
+    //     $("#fail").show();
+    //     $("#fail").html("Error while creating the proof!");
+    //     return;
+    //   } else {
+    //     $("#loader").hide();
+    //     $("#msg").show();
+    //     $("#msg").html("Proof of Existence successfully created!");
+    //   }
+    // });
+  });
+}

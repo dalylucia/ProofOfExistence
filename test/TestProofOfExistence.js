@@ -1,4 +1,4 @@
-const PoE = artifacts.require("./ProofOfExistence.sol");
+const PoE = artifacts.require("./BlockProof.sol");
 const crypto = require("crypto");
 const chai = require("chai");
 
