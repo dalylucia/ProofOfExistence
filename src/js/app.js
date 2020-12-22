@@ -114,15 +114,46 @@ $(function() {
 function toHome() {
   var accs = web3.eth.accounts.length
   if (web3.currentProvider.isMetamask === false) {
-    console.log("Metamask is not available") 
+    showalert("Metamask is not available", 'error') 
   } else if (accs == 0){
-    console.log("Couldn't retrieve accounts! Make sure you have logged in to Metamask.")
+    showalert("Couldn't retrieve accounts! Make sure you have logged in to Metamask.",'error')
   } else {
     window.location = "dashboard.html";
     // document.getElementById("ownerAddress").innerHTML = account;
   }
+}
 
 
+/**
+  Bootstrap Alerts -
+  Function Name - showalert()
+  Inputs - message,alerttype
+  Example - showalert("Invalid Login","alert-error")
+  Types of alerts -- "alert-error","alert-success","alert-info","alert-warning"
+  Required - You only need to add a alert_placeholder div in your html page wherever you want to display these alerts "<div id="alert_placeholder"></div>"
+  Written On - 14-Jun-2013
+**/
+
+function showalert(message,alerttype) {
+
+  if (alerttype === 'error') {
+    $('#alert_placeholder').append('<div id="alertdiv" class="alert alertError"' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>');
+  } else if (alerttype === 'warning') {
+    $('#alert_placeholder').append('<div id="alertdiv" class="alert alertWarning"' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>');
+
+  } else if (alerttype === 'notification') {
+    $('#alert_placeholder').append('<div id="alertdiv" class="alert alertNotification"' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>');
+
+  } else {
+    $('#alert_placeholder').append('<div id="alertdiv" class="alert' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>');
+  }
+  
+  // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+  setTimeout(function() {
+
+    $("#alertdiv").remove();
+
+  }, 5000);
 }
 
 var account = web3.eth.accounts[0];
