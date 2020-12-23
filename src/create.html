@@ -51,7 +51,7 @@
                             </a>
                         </h1>
                     </div>
-                    <p class="">0x042...d0faf</p>
+                    <p id="ownerAddress" class="">0x042...d0faf</p>
                 </div>
             </div>
         </header>
@@ -71,14 +71,14 @@
                     <div class="col-sm-12">
                         <div class="input-block">
                             <label for="">Title</label>
-                            <input type="text" class="form-control">
+                            <input id="proofTitle" type="text" class="form-control">
                         </div>
                     </div>
 
                     <div class="col-sm-12">
                         <div class="input-block textarea">
                             <label for="">Add a summary</label>
-                            <textarea rows="3" type="text" class="form-control"></textarea>
+                            <textarea id="proofSummary" rows="3" type="text" class="form-control"></textarea>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@
                             <div class="tags__content">
                             <ul class="tags__list" id="list" aria-live="polite" aria-atomic="false"></ul>
                             <div class="tags__group">
-                            <input type="text" class="tags__text" id="text" placeholder="Add tag name, separated by comma" title="Add tag name, separated by comma">
+                            <input type="text"  class="tags__text" id="text" placeholder="Add tag name, separated by comma" title="Add tag name, separated by comma">
                             <button type="button" class="tags__empty" id="remove" aria-label="Remove all tags">&times;</button>
                             <!--<ul class="tags__suggestions">Orange</ul>-->
                             </div>

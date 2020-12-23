@@ -1,10 +1,9 @@
 
-// const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
- 
+
 App = {
   web3Provider: null,
   contracts: {},
-  
+  ipfsHash: null,
 
 
   initWeb3: async function() {
@@ -34,44 +33,90 @@ App = {
 
 
   initContract: function() {
-    contract = $.getJSON('Blockproof.json', function(data) {
+    contract = $.getJSON('ProofOfExistence.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
-      var BpArtifact = data;
-      App.contracts.BlockProof = TruffleContract(BpArtifact);
+      var POEArtifact = data;
+ 
+      App.contracts.POE = TruffleContract(POEArtifact);
 
       // Set the provider for our contract
-      App.contracts.BlockProof.setProvider(App.web3Provider);
+      App.contracts.POE.setProvider(App.web3Provider);
       // Use our contract to retrieve and mark the adopted pets
-      return App.contracts.BlockProof
+      return App.contracts.POE
     });
     return App.bindEvents();
   },
 
   bindEvents: function() {
     $(document).on('click', "#createProof", App.saveProofToBlockchain);
+    $(document).on('change', "#upload", App.getIPFShash);
   },
 
   saveProofToBlockchain: function() {
     // test proof
-    var proof = '{ "test_proof" : [' +
-    '{ "title":"test_title" , "ipfs_hash":"12343434" , "summary": "testsummary", "tags" :"t1, t2" }]}';
-    var obj = JSON.parse(proof);
-    var params = obj.test_proof["0"]
-    
-    console.log(params["title"])
-    App.contracts.BlockProof.deployed().then(function(i) {
-      i.createProof(params["title"], params["ipfs_hash"], params["summary"], params["tags"], {
-        from: web3.eth.accounts[0]
-      })
-        .then(proofCreated)
-        .catch(function(e) {
-          // $("#loader").hide();
-          // $("#fail").show();
-          // $("#fail").html(e.message);
-          // $("#createproofbutton").attr("disabled", false);
-        });
+    var title = document.getElementById("proofTitle").value
+    var hash = App.ipfsHash
+    var summary = document.getElementById("proofSummary").value
+    var tags = document.getElementById("text").value
+
+    // console.log(title)
+    // console.log(hash)
+    // console.log(summary)
+    // console.log(tags)
+    // console.log(web3.eth.accounts[0])
+    App.contracts.POE.deployed().then(function(i) {
+      // console.log(i)
+
+      i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 200000})
+
     });
   },
+
+  getIPFShash: function() {
+    const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
+    console.log("change")     
+    var reader = new FileReader();
+    reader.onload = function (e) {
+
+        const magic_array_buffer_converted_to_buffer = buffer.Buffer(reader.result);
+        ipfs.add(magic_array_buffer_converted_to_buffer, (err, result) => {
+            console.log(err, result);
+            
+
+      let ipfsLink = "<a href='https://gateway.ipfs.io/ipfs/" + result[0].hash + "'>gateway.ipfs.io/ipfs/" + result[0].hash + "</a>";
+      App.ipfsHash = result[0].hash
+      
+      document.getElementById("link").innerHTML = ipfsLink;
+
+        })
+    }
+    reader.readAsArrayBuffer(this.files[0]);
+    
+  },
+
+  
+  proofCreated: function() {
+  let proofEvent;
+  contract.Blockproof.deployed().then(function(i) {
+    proofEvent = i.newProofCreated({ fromBlock: 0, toBlock: "latest" });
+    proofEvent.watch(function(err, result) {
+      if (err) {
+        console.log("Error while creating proof")
+        // $("#loader").hide();
+        // $("#fail").show();
+        // $("#fail").html("Error while creating the proof!");
+        return;
+      } else {
+        console.log("POE sucessfully created")
+        // $("#loader").hide();
+        // $("#msg").show();
+        // $("#msg").html("Proof of Existence successfully created!");
+      }
+    });
+  });
+},
+
+
 
   // handleAdopt: function(event) {
   //   event.preventDefault();
@@ -168,22 +213,3 @@ var accountInterval = setInterval(function() {
 }, 1);
 
 
-
-function proofCreated() {
-  let proofEvent;
-  contract.Blockproof.deployed().then(function(i) {
-    proofEvent = i.newProofCreated({ fromBlock: 0, toBlock: "latest" });
-    // proofEvent.watch(function(err, result) {
-    //   if (err) {
-    //     $("#loader").hide();
-    //     $("#fail").show();
-    //     $("#fail").html("Error while creating the proof!");
-    //     return;
-    //   } else {
-    //     $("#loader").hide();
-    //     $("#msg").show();
-    //     $("#msg").html("Proof of Existence successfully created!");
-    //   }
-    // });
-  });
-}

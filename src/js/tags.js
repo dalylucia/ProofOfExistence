@@ -54,7 +54,7 @@
      */
   // Only check each time user types space, tab or uses arrows? For performance
   const onInputKeyUp = function (e) {
-    console.log(e, this.value);
+    // console.log(e, this.value);
   
     // Don't allow just space or comma
     if (this.value == ' ' || this.value == ',') {
@@ -72,7 +72,7 @@
      * Remove items if backspacing
      */
   const onInputKeyDown = function (e) {
-    console.log(this.value);
+    // console.log(this.value);
     let items = list.children;
   
     if ((e.keyCode == 8 || e.keyCode == 46) && items.length && this.value == '') {

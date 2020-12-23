@@ -1,11 +1,12 @@
+
 // pragma statement
 pragma solidity ^0.6.12;
 
 // import statements
-import "https://github.com/provable-things/ethereum-api/blob/master/provableAPI_0.6.sol";
+import "../external_contracts/provableAPI_0.6.sol";
 
 
-contract Proof is usingProvable {
+contract ProofOfExistence is usingProvable {
 
     /*===============================
         TYPE DECLARATIONS
@@ -13,11 +14,16 @@ contract Proof is usingProvable {
 
     address proofCreator;
     uint16 proofId;
-    uint public proofTimeStamp;
+    string public proofTimeStamp;
     string proofTitle;
     string proofIPFSHash;
     string proofSummary;
     string proofTags;
+
+    uint    constant proofTitleLength       = 15;
+    uint    constant proofIpfsHashLength    = 46;
+    uint    constant proofRemarksLength     = 40;
+    uint    constant proofTagsLength        = 10;
 
 
     /*===============================
@@ -26,8 +32,8 @@ contract Proof is usingProvable {
 
     struct Proof {
         address proofCreator;
-        uint16 proofId;
-        uint proofTimeStamp;
+        uint proofId;
+        string proofTimeStamp;
         string proofTitle;
         string proofIPFSHash;
         string proofSummary;
@@ -62,9 +68,14 @@ contract Proof is usingProvable {
 
     // Add proof to the blockchain
     function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags) public {
-
+        assert ((bytes(_title).length > 0) && (bytes(_title).length <= proofTitleLength));
+        assert ((bytes(_ipfs).length > 0) && (bytes(_ipfs).length == proofIpfsHashLength));
+        assert (bytes(_summary).length <= proofRemarksLength);
+        assert (bytes(_tags).length <= proofTagsLength); 
         // update timestamp
-        update();
+        // update();
+
+        proofTimeStamp = "2020";
 
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
@@ -83,7 +94,7 @@ contract Proof is usingProvable {
         proofCounter++; 
     }
 
-    function __callback(bytes32 queryId, string memory result) {
+    function __callback(string memory result) public {
         if (msg.sender != provable_cbAddress()) revert();
         NewTimeStamp(result);
         proofTimeStamp = result;
@@ -91,17 +102,24 @@ contract Proof is usingProvable {
 
     function update() public payable {
         NewProvableQuery("Provable query was sent, waiting for a response...");
-        var gasLimit = 200000;
+        uint256 gasLimit = 2000000;
         provable_query("WolframAlpha", "timestamp now", gasLimit);
     }
 
+    function balance() public view returns(uint256)  {
+        return msg.sender.balance;
+    }
+
+    function getTS() public view returns(string memory) {
+        return proofTimeStamp;
+    }
 
     /*===============================
         GETTER FUNCTIONS
     ================================*/
 
     function getIPFS(uint _id) public view returns (string memory x) {
-        return proofs[_id].ipfs;
+        return proofs[_id].proofIPFSHash;
     }
 
     function getTotalProofs() public view returns (uint x){
@@ -109,15 +127,19 @@ contract Proof is usingProvable {
     }
 
     function getOwner(uint _id) public view returns (address x) {
-        return proofs[_id].owner;
+        return proofs[_id].proofCreator;
     }
 
     function getDescription(uint _id) public view returns (string memory x) {
-        return proofs[_id].description;
+        return proofs[_id].proofSummary;
     }
 
     function getTitle(uint _id) public view returns (string memory x) {
-        return proofs[_id].title;
+        return proofs[_id].proofTitle;
+    }
+
+    function getTags(uint _id) public view returns (string memory x) {
+        return proofs[_id].proofTags;
     }
 
 }
