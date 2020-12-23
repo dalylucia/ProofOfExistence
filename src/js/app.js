@@ -64,12 +64,18 @@ App = {
     // console.log(summary)
     // console.log(tags)
     // console.log(web3.eth.accounts[0])
-    App.contracts.POE.deployed().then(function(i) {
-      // console.log(i)
 
-      i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 200000})
+    
 
-    });
+    try {
+      App.contracts.POE.deployed().then(function(i) {
+        i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 200000})
+      });
+      // window.location = "dashboard.html";
+    }
+    catch(err) {
+      showalert(err,'error')
+    }
   },
 
   getIPFShash: function() {
