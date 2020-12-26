@@ -4,7 +4,11 @@ App = {
   web3Provider: null,
   contracts: {},
   ipfsHash: null,
-
+  title: null,
+  hash: null,
+  summary: null,
+  tags: null,
+  
 
   initWeb3: async function() {
     // Modern dapp browsers...
@@ -36,7 +40,7 @@ App = {
     contract = $.getJSON('ProofOfExistence.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
       var POEArtifact = data;
- 
+      
       App.contracts.POE = TruffleContract(POEArtifact);
 
       // Set the provider for our contract
@@ -50,15 +54,93 @@ App = {
   bindEvents: function() {
     $(document).on('click', "#createProof", App.saveProofToBlockchain);
     $(document).on('change', "#upload", App.getIPFShash);
+    App.loadProofs();
   },
+
+
+
+
+loadProofs:  function() {
+  if (window.location.href == "http://localhost:3000/dashboard.html") {
+    setTimeout(async function() { 
+      // const deployed = await App.contracts.POE.deployed();
+      // const totalProofs = await deployed.getTotalProofs();
+      // console.log(totalProofs)
+      // let deployed;
+
+      // // get total proofs
+      let totalProofs;
+      let myProofInd = [];
+      let currentAddress;
+      App.contracts.POE.deployed()
+        .then((instance) => {
+          deployed = instance;
+          return deployed.getTotalProofs();
+        }).then((result) => {
+          totalProofs = result.c["0"]
+        }).then((result) => {
+
+          // App.next().then(function(result) {
+          //   // process final result here
+          // })
+
+
+
+        //   (function loop(i) {
+        //     if (i < result) new Promise((resolve, reject) => {
+        //         setTimeout( () => {
+        //     currentAddress = App.contracts.POE.deployed()
+        //     .then((instance) => {
+        //       deployed = instance;
+        //       return deployed.getOwner(i);
+        //     });
+        //       if( web3.eth.accounts[0] == currentAddress) {
+        //         myProofInd.push(i)
+        //       }
+        //             resolve();
+        //         }, 10);
+        //     }).then(loop.bind(null, i+1));
+        // })(0);
+
+        }).then((result) => {
+          console.log(myProofInd)
+        });
+
+
+    }, 10);
+  }
+  
+  
+    },
+
+    next: function() {
+      return getSenderAddress.then(function(result) {
+        if (result == web3.eth.accounts[0]) {
+
+        } else {
+          return result;
+        }
+      });
+    },
+
+    getSenderAddress: function(index) {
+      App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwner(index);
+          });
+    },
+
+
+
 
   saveProofToBlockchain: function() {
     // test proof
-    var title = document.getElementById("proofTitle").value
-    var hash = App.ipfsHash
-    var summary = document.getElementById("proofSummary").value
-    var tags = document.getElementById("text").value
-
+    title = document.getElementById("proofTitle").value
+    hash = App.ipfsHash
+    summary = document.getElementById("proofSummary").value
+    tags = document.getElementById("text").value
+    
     // console.log(title)
     // console.log(hash)
     // console.log(summary)
@@ -69,87 +151,63 @@ App = {
 
     try {
       App.contracts.POE.deployed().then(function(i) {
-        i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 200000})
-      });
-      // window.location = "dashboard.html";
+        i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 250000})
+        .then(
+          App.waitForProof()
+          );
+        });
     }
     catch(err) {
       showalert(err,'error')
     }
   },
 
+
+
+  waitForProof: async function() {
+      App.contracts.POE.deployed().then(meta => {
+       
+        const event = meta.EvtProofAdded({fromBlock: 'latest',toBlock: 'latest'+1});
+        // console.log(allEvents)
+        event.watch((err, res) => {
+          if (hash == res.args._ipfs && title == res.args._title) {
+            window.scrollTo(0,0);
+            showalert("Transaction successful. Redirecting to your dashboard...",'notification');
+
+            setTimeout(function() {
+              window.location = "dashboard.html";
+            }, 3000)
+                      
+          }
+          
+        });
+      });
+  },
+
   getIPFShash: function() {
-    const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
-    console.log("change")     
+    const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });    
     var reader = new FileReader();
     reader.onload = function (e) {
 
         const magic_array_buffer_converted_to_buffer = buffer.Buffer(reader.result);
         ipfs.add(magic_array_buffer_converted_to_buffer, (err, result) => {
-            console.log(err, result);
             
+            if (err != null) {
+              showalert("Could not upload image to IPFS",'error');
+            }
 
       let ipfsLink = "<a href='https://gateway.ipfs.io/ipfs/" + result[0].hash + "'>gateway.ipfs.io/ipfs/" + result[0].hash + "</a>";
       App.ipfsHash = result[0].hash
       
       document.getElementById("link").innerHTML = ipfsLink;
-
+      document.getElementById("createProof").classList.remove("button-default");
         })
     }
     reader.readAsArrayBuffer(this.files[0]);
     
   },
 
-  
-  proofCreated: function() {
-  let proofEvent;
-  contract.Blockproof.deployed().then(function(i) {
-    proofEvent = i.newProofCreated({ fromBlock: 0, toBlock: "latest" });
-    proofEvent.watch(function(err, result) {
-      if (err) {
-        console.log("Error while creating proof")
-        // $("#loader").hide();
-        // $("#fail").show();
-        // $("#fail").html("Error while creating the proof!");
-        return;
-      } else {
-        console.log("POE sucessfully created")
-        // $("#loader").hide();
-        // $("#msg").show();
-        // $("#msg").html("Proof of Existence successfully created!");
-      }
-    });
-  });
-},
 
-
-
-  // handleAdopt: function(event) {
-  //   event.preventDefault();
-
-  //   var petId = parseInt($(event.target).data('id'));
-
-  //   var adoptionInstance;
-
-  //   web3.eth.getAccounts(function(error, accounts) {
-  //     if (error) {
-  //       console.log(error);
-  //     }
-
-  //     var account = accounts[0];
-
-  //     App.contracts.Adoption.deployed().then(function(instance) {
-  //       adoptionInstance = instance;
-
-  //       // Execute adopt as a transaction by sending account
-  //       return adoptionInstance.adopt(petId, {from: account});
-  //     }).then(function(result) {
-  //       return App.markAdopted();
-  //     }).catch(function(err) {
-  //       console.log(err.message);
-  //     });
-  //   });
-  // }
 
 };
 
@@ -207,11 +265,14 @@ function showalert(message,alerttype) {
   }, 5000);
 }
 
+
+
+
 var account = web3.eth.accounts[0];
 var accountInterval = setInterval(function() {
   if (web3.eth.accounts[0] !== account) {
     account = web3.eth.accounts[0];
-    if (window.location.href == "http://localhost:3000/dashboard.html") {
+    if (window.location.href != "http://localhost:3000/" && window.location.href !=  "http://localhost:3000/index.html#" && window.location.href !=  "http://localhost:3000/index.html") {
       document.getElementById("ownerAddress").innerHTML = account;
     }
       

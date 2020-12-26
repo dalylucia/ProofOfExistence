@@ -76,14 +76,14 @@ contract ProofOfExistence is usingProvable {
         // update();
 
         proofTimeStamp = "2020";
-
+    
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
             msg.sender,
             proofCounter,
             proofTimeStamp,
-            _ipfs,
             _title,
+            _ipfs,
             _summary,
             _tags
         );
@@ -96,12 +96,12 @@ contract ProofOfExistence is usingProvable {
 
     function __callback(string memory result) public {
         if (msg.sender != provable_cbAddress()) revert();
-        NewTimeStamp(result);
+        emit NewTimeStamp(result);
         proofTimeStamp = result;
     }
 
     function update() public payable {
-        NewProvableQuery("Provable query was sent, waiting for a response...");
+        emit NewProvableQuery("Provable query was sent, waiting for a response...");
         uint256 gasLimit = 2000000;
         provable_query("WolframAlpha", "timestamp now", gasLimit);
     }
@@ -141,5 +141,9 @@ contract ProofOfExistence is usingProvable {
     function getTags(uint _id) public view returns (string memory x) {
         return proofs[_id].proofTags;
     }
+
+    // function getProofs(address _key) public view returns (uint) {
+    //     return proofs[_key];
+    // }
 
 }

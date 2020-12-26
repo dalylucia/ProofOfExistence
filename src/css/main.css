@@ -187,6 +187,7 @@ svg:not(:root) {
 	overflow: hidden
 }
 
+
 button,
 input,
 optgroup,
@@ -1377,7 +1378,7 @@ section.empty-proofs {
 	text-transform: uppercase;
 	text-decoration: none !important;
 	background-color: #fff;
-	color: #4992F0 !important;
+	color: #4992F0;
 	border: none;
 	border-radius: 2px;
 	cursor: pointer;
@@ -1449,6 +1450,12 @@ section.empty-proofs {
 .button-primary:hover {
 	background: #3386ef;
 	background: linear-gradient(65deg, #1777ed 0, #4e95f0 100%)
+}
+
+.button-default {
+	background: #909090 !important;
+	color: #fff !important;
+	pointer-events: none;
 }
 
 .button-block {
