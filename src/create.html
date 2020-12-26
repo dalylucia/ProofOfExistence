@@ -51,7 +51,7 @@
                             </a>
                         </h1>
                     </div>
-                    <p id="ownerAddress" class="">0x042...d0faf</p>
+                    <p id="ownerAddress">0x042...d0faf</p>
                 </div>
             </div>
         </header>
@@ -82,35 +82,16 @@
                         </div>
                     </div>
 
-                    <!-- <div class="col-sm-12">
+                    <div class="col-sm-12">
                         <div class="drop-zone">
                             <span class="drop-zone__prompt">Drop file here or click to upload</span>
-                            <input type="file" name="myFile" class="drop-zone__input">
+                            <input id="upload" type="file" name="myFile" class="drop-zone__input">
                         </div>
-                    </div> -->
-                    <input type="file" id="upload">
-
-                    <div id="link"></div> <!-- markup created after upload -->
-                    <script>
-                        const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', { protocol: 'https' });
-                
-                        $("#upload").on("change", function() {
-                            var reader = new FileReader();
-                            reader.onload = function (e) {
-                
-                                const magic_array_buffer_converted_to_buffer = buffer.Buffer(reader.result);
-                                ipfs.add(magic_array_buffer_converted_to_buffer, (err, result) => {
-                                    console.log(err, result);
-                                    
-                
-                              let ipfsLink = "<a href='https://gateway.ipfs.io/ipfs/" + result[0].hash + "'>gateway.ipfs.io/ipfs/" + result[0].hash + "</a>";
-                              document.getElementById("link").innerHTML = ipfsLink;
-                
-                                })
-                            }
-                            reader.readAsArrayBuffer(this.files[0]);
-                        })
-                    </script>
+                    </div>
+                  
+                    <!-- IPFS hash/link is generated here -->
+                    <div id="link"></div> 
+   
 
                     <div class="col-sm-12 content">
                         <label class="tags">
@@ -127,7 +108,7 @@
                     
                     <div class="col-sm-12 button-container">
                         <div class="control">
-                            <a id="createProof" class="button button-primary button-shadow">Create Proof</a>
+                            <a id="createProof" class="button button-primary button-shadow button-default" >Create Proof</a>
                         </div>
                     </div>
                 </form>
