@@ -4,11 +4,7 @@ App = {
   web3Provider: null,
   contracts: {},
   ipfsHash: null,
-  title: null,
-  hash: null,
-  summary: null,
-  tags: null,
-  
+  MyProofs: [],
 
   initWeb3: async function() {
     // Modern dapp browsers...
@@ -63,92 +59,104 @@ App = {
 loadProofs:  function() {
   if (window.location.href == "http://localhost:3000/dashboard.html") {
     setTimeout(async function() { 
-      // const deployed = await App.contracts.POE.deployed();
-      // const totalProofs = await deployed.getTotalProofs();
-      // console.log(totalProofs)
-      // let deployed;
 
       // // get total proofs
       let totalProofs;
-      let myProofInd = [];
-      let currentAddress;
+     
+      let Mytitles;
+      let Mysummaries;
+      let Myhashes;
+      let Mytimestamps;
+      let Mytags;
+
       App.contracts.POE.deployed()
         .then((instance) => {
           deployed = instance;
-          return deployed.getTotalProofs();
+          return deployed.getTotalOwnerProofs();
         }).then((result) => {
           totalProofs = result.c["0"]
         }).then((result) => {
+          console.log("total proofs:" + totalProofs)
+          // get titles
+          App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwnerTitles(totalProofs);
+          }).then((result) => {
+            Mytitles = result
+            console.log("titles " + Mytitles)
+          })
 
-          // App.next().then(function(result) {
-          //   // process final result here
-          // })
+          //get summaries
+          App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwnerSummaries(totalProofs);
+          }).then((result) => {
+            Mysummaries = result
+            console.log("summaries " + Mysummaries)
+          })
 
+          //get hashes
+          App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwnerHashes(totalProofs);
+          }).then((result) => {
+            Myhashes = result
+            console.log("hashes " + Myhashes)
+          })
 
+          //get timestamps
+          App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwnerTimestamps(totalProofs);
+          }).then((result) => {
+            Mytimestamps = result
+            console.log("timestamps " + Mytimestamps)
+          })
 
-        //   (function loop(i) {
-        //     if (i < result) new Promise((resolve, reject) => {
-        //         setTimeout( () => {
-        //     currentAddress = App.contracts.POE.deployed()
-        //     .then((instance) => {
-        //       deployed = instance;
-        //       return deployed.getOwner(i);
-        //     });
-        //       if( web3.eth.accounts[0] == currentAddress) {
-        //         myProofInd.push(i)
-        //       }
-        //             resolve();
-        //         }, 10);
-        //     }).then(loop.bind(null, i+1));
-        // })(0);
+          //get tags
+          App.contracts.POE.deployed()
+          .then((instance) => {
+            deployed = instance;
+            return deployed.getOwnerTags(totalProofs);
+          }).then((result) => {
+            Mytags = result
+            console.log("tags " + Mytags)
+          })
 
         }).then((result) => {
-          console.log(myProofInd)
+          // add fields to MyProof array
+          setTimeout(async function() { 
+          var i;
+          for (i = 1; i <= totalProofs; i++) {
+            proof = [Mytitles[i], Myhashes[i], Mysummaries[i], Mytimestamps[i], Mytags[i]]
+            App.MyProofs.push(proof)
+            
+          }
+          return App.generateProofs();
+        },30 );
+
         });
-
-
-    }, 10);
+    },20 );
   }
   
   
     },
 
-    next: function() {
-      return getSenderAddress.then(function(result) {
-        if (result == web3.eth.accounts[0]) {
-
-        } else {
-          return result;
-        }
-      });
+    generateProofs: function() {
+      // TODO
     },
-
-    getSenderAddress: function(index) {
-      App.contracts.POE.deployed()
-          .then((instance) => {
-            deployed = instance;
-            return deployed.getOwner(index);
-          });
-    },
-
-
-
-
+   
   saveProofToBlockchain: function() {
-    // test proof
+
     title = document.getElementById("proofTitle").value
     hash = App.ipfsHash
     summary = document.getElementById("proofSummary").value
     tags = document.getElementById("text").value
     
-    // console.log(title)
-    // console.log(hash)
-    // console.log(summary)
-    // console.log(tags)
-    // console.log(web3.eth.accounts[0])
-
-    
-
     try {
       App.contracts.POE.deployed().then(function(i) {
         i.submitProof(hash, title, summary, tags, { from: web3.eth.accounts[0], gaslimit: 250000})
@@ -204,11 +212,7 @@ loadProofs:  function() {
         })
     }
     reader.readAsArrayBuffer(this.files[0]);
-    
   },
-
-
-
 };
 
 $(function() {
@@ -274,6 +278,7 @@ var accountInterval = setInterval(function() {
     account = web3.eth.accounts[0];
     if (window.location.href != "http://localhost:3000/" && window.location.href !=  "http://localhost:3000/index.html#" && window.location.href !=  "http://localhost:3000/index.html") {
       document.getElementById("ownerAddress").innerHTML = account;
+      
     }
       
   }
