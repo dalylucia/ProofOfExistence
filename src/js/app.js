@@ -164,13 +164,32 @@ loadProofs:  function() {
           App.waitForProof()
           );
         });
+        console.log("Calling getTime");
+      App.getTime();
     }
     catch(err) {
       showalert(err,'error')
     }
   },
 
+  getTime: function() {
+    var instance;
 
+    App.contracts.POE.deployed().then(function(i) {
+      instance = i;
+
+      console.log("INSTANCE");
+      console.log(instance);
+
+      return instance.getTS.call();
+    }).then(function(proofTimeStamp) {
+      console.log("TimeStamp");
+      console.log("Time:" + proofTimeStamp);
+
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+  },
 
   waitForProof: async function() {
       App.contracts.POE.deployed().then(meta => {
@@ -182,9 +201,9 @@ loadProofs:  function() {
             window.scrollTo(0,0);
             showalert("Transaction successful. Redirecting to your dashboard...",'notification');
 
-            setTimeout(function() {
-              window.location = "dashboard.html";
-            }, 3000)
+            // setTimeout(function() {
+            //   window.location = "dashboard.html";
+            // }, 3000)
                       
           }
           
@@ -222,8 +241,6 @@ $(function() {
 });
 
 
-
-
 function toHome() {
   var accs = web3.eth.accounts.length
   if (web3.currentProvider.isMetamask === false) {
@@ -232,8 +249,8 @@ function toHome() {
     showalert("Couldn't retrieve accounts! Make sure you have logged in to Metamask.",'error')
   } else {
     window.location = "dashboard.html";
-    // document.getElementById("ownerAddress").innerHTML = account;
   }
+  document.getElementById("ownerAddress").innerHTML = account;
 }
 
 
@@ -246,7 +263,6 @@ function toHome() {
   Required - You only need to add a alert_placeholder div in your html page wherever you want to display these alerts "<div id="alert_placeholder"></div>"
   Written On - 14-Jun-2013
 **/
-
 function showalert(message,alerttype) {
 
   if (alerttype === 'error') {
@@ -269,18 +285,13 @@ function showalert(message,alerttype) {
   }, 5000);
 }
 
-
-
-
 var account = web3.eth.accounts[0];
 var accountInterval = setInterval(function() {
   if (web3.eth.accounts[0] !== account) {
     account = web3.eth.accounts[0];
     if (window.location.href != "http://localhost:3000/" && window.location.href !=  "http://localhost:3000/index.html#" && window.location.href !=  "http://localhost:3000/index.html") {
-      document.getElementById("ownerAddress").innerHTML = account;
-      
-    }
-      
+      document.getElementById("ownerAddress").innerHTML = account; 
+  }
   }
 }, 1);
 
