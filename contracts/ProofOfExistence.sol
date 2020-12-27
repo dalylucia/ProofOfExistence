@@ -1,7 +1,7 @@
 
 // pragma statement
 pragma solidity ^0.6.12;
-
+pragma experimental ABIEncoderV2;
 // import statements
 import "../external_contracts/provableAPI_0.6.sol";
 
@@ -106,6 +106,10 @@ contract ProofOfExistence is usingProvable {
         provable_query("WolframAlpha", "timestamp now", gasLimit);
     }
 
+
+    /*===============================
+        GETTER FUNCTIONS
+    ================================*/
     function balance() public view returns(uint256)  {
         return msg.sender.balance;
     }
@@ -114,9 +118,87 @@ contract ProofOfExistence is usingProvable {
         return proofTimeStamp;
     }
 
-    /*===============================
-        GETTER FUNCTIONS
-    ================================*/
+    function getTotalOwnerProofs() public view returns (uint counter){
+        counter = 0;
+        for (uint i = 0; i < proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                counter++;
+            }
+        }
+        return counter;
+    }   
+
+    function getOwnerTitles(uint _totalOwnerProofs) public view returns (string[] memory) {
+        _totalOwnerProofs ++;
+        
+        string[] memory titles = new string[](_totalOwnerProofs);
+        uint index = 0;
+        for (uint i =0; i< proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                titles[index] = proofs[i].proofTitle;
+                index++;
+            }    
+        } 
+        return titles;
+    }
+
+     function getOwnerSummaries(uint _totalOwnerProofs) public view returns (string[] memory) {
+        _totalOwnerProofs ++;
+        
+        string[] memory summaries = new string[](_totalOwnerProofs);
+        uint index = 0;
+        for (uint i =0; i< proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                summaries[index] = proofs[i].proofSummary;
+                index++;
+            }    
+        } 
+        return summaries;
+    }
+
+    function getOwnerHashes(uint _totalOwnerProofs) public view returns (string[] memory) {
+        _totalOwnerProofs ++;
+        
+        string[] memory hashes = new string[](_totalOwnerProofs);
+        uint index = 0;
+        for (uint i =0; i< proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                hashes[index] = proofs[i].proofIPFSHash;
+                index++;
+            }    
+        } 
+        return hashes;
+    }
+    
+    function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (string[] memory) {
+        _totalOwnerProofs ++;
+        
+        string[] memory timestamps = new string[](_totalOwnerProofs);
+        uint index = 0;
+        for (uint i =0; i< proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                timestamps[index] = proofs[i].proofTimeStamp;
+                index++;
+            }    
+        } 
+        return timestamps;
+    }
+
+    function getOwnerTags(uint _totalOwnerProofs) public view returns (string[] memory) {
+        _totalOwnerProofs ++;
+        
+        string[] memory tags = new string[](_totalOwnerProofs);
+        uint index = 0;
+        for (uint i =0; i< proofCounter; i++) {
+            if(msg.sender == proofs[i].proofCreator) {
+                tags[index] = proofs[i].proofTags;
+                index++;
+            }    
+        } 
+        return tags;
+    }
+
+
 
     function getIPFS(uint _id) public view returns (string memory x) {
         return proofs[_id].proofIPFSHash;
