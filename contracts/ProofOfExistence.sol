@@ -69,7 +69,7 @@ contract ProofOfExistence is usingProvable {
     constructor()
         public
     {
-        update(); // Update on contract creation...
+        // update(); // Update on contract creation...
     }
 
     /*===============================
@@ -85,7 +85,7 @@ contract ProofOfExistence is usingProvable {
         // update timestamp
         // update();
 
-        // proofTimeStamp = "2020";
+        proofTimeStamp = "2020";
     
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
