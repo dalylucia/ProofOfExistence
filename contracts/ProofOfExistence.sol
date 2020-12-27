@@ -20,11 +20,6 @@ contract ProofOfExistence is usingProvable {
     string proofSummary;
     string proofTags;
 
-    uint    constant proofTitleLength       = 15;
-    uint    constant proofIpfsHashLength    = 46;
-    uint    constant proofRemarksLength     = 40;
-    uint    constant proofTagsLength        = 10;
-
 
     /*===============================
         ENUMS & STRUCTS
@@ -68,10 +63,6 @@ contract ProofOfExistence is usingProvable {
 
     // Add proof to the blockchain
     function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags) public {
-        assert ((bytes(_title).length > 0) && (bytes(_title).length <= proofTitleLength));
-        assert ((bytes(_ipfs).length > 0) && (bytes(_ipfs).length == proofIpfsHashLength));
-        assert (bytes(_summary).length <= proofRemarksLength);
-        assert (bytes(_tags).length <= proofTagsLength); 
         // update timestamp
         // update();
 
@@ -223,9 +214,4 @@ contract ProofOfExistence is usingProvable {
     function getTags(uint _id) public view returns (string memory x) {
         return proofs[_id].proofTags;
     }
-
-    // function getProofs(address _key) public view returns (uint) {
-    //     return proofs[_key];
-    // }
-
 }

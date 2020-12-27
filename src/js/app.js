@@ -4,6 +4,7 @@ App = {
   web3Provider: null,
   contracts: {},
   ipfsHash: null,
+  totalProofs: null,
   MyProofs: [],
 
   initWeb3: async function() {
@@ -61,7 +62,7 @@ loadProofs:  function() {
     setTimeout(async function() { 
 
       // // get total proofs
-      let totalProofs;
+      
      
       let Mytitles;
       let Mysummaries;
@@ -74,14 +75,14 @@ loadProofs:  function() {
           deployed = instance;
           return deployed.getTotalOwnerProofs();
         }).then((result) => {
-          totalProofs = result.c["0"]
+          App.totalProofs = result.c["0"]
         }).then((result) => {
-          console.log("total proofs:" + totalProofs)
+          console.log("total proofs:" + App.totalProofs)
           // get titles
           App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
-            return deployed.getOwnerTitles(totalProofs);
+            return deployed.getOwnerTitles(App.totalProofs);
           }).then((result) => {
             Mytitles = result
             console.log("titles " + Mytitles)
@@ -91,7 +92,7 @@ loadProofs:  function() {
           App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
-            return deployed.getOwnerSummaries(totalProofs);
+            return deployed.getOwnerSummaries(App.totalProofs);
           }).then((result) => {
             Mysummaries = result
             console.log("summaries " + Mysummaries)
@@ -101,7 +102,7 @@ loadProofs:  function() {
           App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
-            return deployed.getOwnerHashes(totalProofs);
+            return deployed.getOwnerHashes(App.totalProofs);
           }).then((result) => {
             Myhashes = result
             console.log("hashes " + Myhashes)
@@ -111,7 +112,7 @@ loadProofs:  function() {
           App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
-            return deployed.getOwnerTimestamps(totalProofs);
+            return deployed.getOwnerTimestamps(App.totalProofs);
           }).then((result) => {
             Mytimestamps = result
             console.log("timestamps " + Mytimestamps)
@@ -121,7 +122,7 @@ loadProofs:  function() {
           App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
-            return deployed.getOwnerTags(totalProofs);
+            return deployed.getOwnerTags(App.totalProofs);
           }).then((result) => {
             Mytags = result
             console.log("tags " + Mytags)
@@ -131,7 +132,7 @@ loadProofs:  function() {
           // add fields to MyProof array
           setTimeout(async function() { 
           var i;
-          for (i = 1; i <= totalProofs; i++) {
+          for (i = 1; i <= App.totalProofs; i++) {
             proof = [Mytitles[i], Myhashes[i], Mysummaries[i], Mytimestamps[i], Mytags[i]]
             App.MyProofs.push(proof)
             
@@ -147,7 +148,13 @@ loadProofs:  function() {
     },
 
     generateProofs: function() {
-      // TODO
+ 
+      if(App.totalProofs !== 0) {
+        document.getElementsByClassName("gallery")["0"].style.display = "block"
+        document.getElementsByClassName("empty")["0"].style.display = "none"
+
+
+      }
     },
    
   saveProofToBlockchain: function() {
