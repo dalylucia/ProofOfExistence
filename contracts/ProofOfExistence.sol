@@ -3,6 +3,7 @@
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
 // import statements
+
 import "../external_contracts/provableAPI_0.6.sol";
 
 
@@ -54,8 +55,16 @@ contract ProofOfExistence is usingProvable {
         string _title
     );
 
-    event NewProvableQuery(string description);
-    event NewTimeStamp(string timestamp);
+    event LogNewProvableQuery(string description);
+    event LogNewTimeStamp(string timestamp);
+
+    /*===============================
+        CONSTRUCTOR
+    ================================*/
+
+    constructor() public {
+        // update(); // Update on contract creation...
+    }
 
     /*===============================
         FUNCTIONS
@@ -85,18 +94,34 @@ contract ProofOfExistence is usingProvable {
         proofCounter++; 
     }
 
-    function __callback(string memory result) public {
-        if (msg.sender != provable_cbAddress()) revert();
-        emit NewTimeStamp(result);
-        proofTimeStamp = result;
+    // function __callback(string memory _result) public {
+    //     require(msg.sender == provable_cbAddress());
+    //     proofTimeStamp = _result;
+    //     emit LogNewTimeStamp(proofTimeStamp);
+    // }
+
+    function __callback(string memory _result) public {
+        require(msg.sender == provable_cbAddress());
+        proofTimeStamp = _result;
+        emit LogNewTimeStamp(proofTimeStamp);
     }
 
     function update() public payable {
-        emit NewProvableQuery("Provable query was sent, waiting for a response...");
-        uint256 gasLimit = 2000000;
-        provable_query("WolframAlpha", "timestamp now", gasLimit);
+        emit LogNewProvableQuery("Provable query was sent, waiting for a response...");
+        provable_query("WolframAlpha", "timestamp now");
     }
 
+    function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
+        uint8 i = 0;
+        while(i < 32 && _bytes32[i] != 0) {
+            i++;
+        }
+        bytes memory bytesArray = new bytes(i);
+        for (i = 0; i < 32 && _bytes32[i] != 0; i++) {
+            bytesArray[i] = _bytes32[i];
+        }
+        return string(bytesArray);
+    }
 
     /*===============================
         GETTER FUNCTIONS
@@ -124,7 +149,7 @@ contract ProofOfExistence is usingProvable {
         
         string[] memory titles = new string[](_totalOwnerProofs);
         uint index = 0;
-        for (uint i =0; i< proofCounter; i++) {
+        for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
                 titles[index] = proofs[i].proofTitle;
                 index++;
@@ -138,7 +163,7 @@ contract ProofOfExistence is usingProvable {
         
         string[] memory summaries = new string[](_totalOwnerProofs);
         uint index = 0;
-        for (uint i =0; i< proofCounter; i++) {
+        for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
                 summaries[index] = proofs[i].proofSummary;
                 index++;
@@ -152,7 +177,7 @@ contract ProofOfExistence is usingProvable {
         
         string[] memory hashes = new string[](_totalOwnerProofs);
         uint index = 0;
-        for (uint i =0; i< proofCounter; i++) {
+        for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
                 hashes[index] = proofs[i].proofIPFSHash;
                 index++;
@@ -166,7 +191,7 @@ contract ProofOfExistence is usingProvable {
         
         string[] memory timestamps = new string[](_totalOwnerProofs);
         uint index = 0;
-        for (uint i =0; i< proofCounter; i++) {
+        for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
                 timestamps[index] = proofs[i].proofTimeStamp;
                 index++;
@@ -180,7 +205,7 @@ contract ProofOfExistence is usingProvable {
         
         string[] memory tags = new string[](_totalOwnerProofs);
         uint index = 0;
-        for (uint i =0; i< proofCounter; i++) {
+        for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
                 tags[index] = proofs[i].proofTags;
                 index++;
@@ -188,8 +213,6 @@ contract ProofOfExistence is usingProvable {
         } 
         return tags;
     }
-
-
 
     function getIPFS(uint _id) public view returns (string memory x) {
         return proofs[_id].proofIPFSHash;

@@ -150,8 +150,56 @@ loadProofs:  function() {
     generateProofs: function() {
  
       if(App.totalProofs !== 0) {
-        document.getElementsByClassName("gallery")["0"].style.display = "block"
-        document.getElementsByClassName("empty")["0"].style.display = "none"
+        // hide/show elements
+        document.getElementsByClassName("gallery")["0"].style.display = "block";
+        document.getElementsByClassName("empty")["0"].style.display = "none";
+
+        //generate thumbnails
+        let item = document.createElement('li');
+        let a = document.createElement('a');
+        a.href = "#item01"
+        let img = document.createElement('img')
+        img.src = "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png"
+        img.alt = ""
+        a.appendChild(img)
+        item.appendChild(a)
+        const galleryList = document.querySelector('#galleryList');
+        console.log(item)
+        galleryList.appendChild(item)
+
+        //generate details
+        // let div1 = document.createElement('div');
+        // div1.id = "item01";
+        // div1.className = "port";
+
+        // let div2 = document.createElement('div');
+        // div2.className = "row";
+
+        // let div3 = document.createElement('div');
+        // div3.className = "description";
+
+        // let h1 = document.createElement('h1');
+        // h1.innerHTML = "Test title"
+
+        // let p1 = document.createElement('p');
+        // p1.className = "ddParag"
+
+        // let span1 = document.createElement('span');
+        // span1.className = "ddTitle"
+        // span1.innerHTML = "Hash"
+        // p1.appendChild(span1)
+
+        // let p2 = document.createElement('p');
+        // p2.className = "ddParag"
+        // p2.innerHTML = "0xTESTHASH"
+
+        
+
+
+
+
+
+
 
 
       }
@@ -171,13 +219,32 @@ loadProofs:  function() {
           App.waitForProof()
           );
         });
+        console.log("Calling getTime");
+      App.getTime();
     }
     catch(err) {
       showalert(err,'error')
     }
   },
 
+  getTime: function() {
+    var instance;
 
+    App.contracts.POE.deployed().then(function(i) {
+      instance = i;
+
+      console.log("INSTANCE");
+      console.log(instance);
+
+      return instance.getTS.call();
+    }).then(function(proofTimeStamp) {
+      console.log("TimeStamp");
+      console.log("Time:" + proofTimeStamp);
+      App.waitForProof()
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+  },
 
   waitForProof: async function() {
       App.contracts.POE.deployed().then(meta => {
@@ -189,9 +256,9 @@ loadProofs:  function() {
             window.scrollTo(0,0);
             showalert("Transaction successful. Redirecting to your dashboard...",'notification');
 
-            setTimeout(function() {
-              window.location = "dashboard.html";
-            }, 3000)
+            // setTimeout(function() {
+            //   window.location = "dashboard.html";
+            // }, 3000)
                       
           }
           
@@ -229,8 +296,6 @@ $(function() {
 });
 
 
-
-
 function toHome() {
   var accs = web3.eth.accounts.length
   if (web3.currentProvider.isMetamask === false) {
@@ -239,8 +304,8 @@ function toHome() {
     showalert("Couldn't retrieve accounts! Make sure you have logged in to Metamask.",'error')
   } else {
     window.location = "dashboard.html";
-    // document.getElementById("ownerAddress").innerHTML = account;
   }
+  document.getElementById("ownerAddress").innerHTML = account;
 }
 
 
@@ -253,7 +318,6 @@ function toHome() {
   Required - You only need to add a alert_placeholder div in your html page wherever you want to display these alerts "<div id="alert_placeholder"></div>"
   Written On - 14-Jun-2013
 **/
-
 function showalert(message,alerttype) {
 
   if (alerttype === 'error') {
@@ -276,18 +340,13 @@ function showalert(message,alerttype) {
   }, 5000);
 }
 
-
-
-
 var account = web3.eth.accounts[0];
 var accountInterval = setInterval(function() {
   if (web3.eth.accounts[0] !== account) {
     account = web3.eth.accounts[0];
     if (window.location.href != "http://localhost:3000/" && window.location.href !=  "http://localhost:3000/index.html#" && window.location.href !=  "http://localhost:3000/index.html") {
-      document.getElementById("ownerAddress").innerHTML = account;
-      
-    }
-      
+      document.getElementById("ownerAddress").innerHTML = account; 
+  }
   }
 }, 1);
 
