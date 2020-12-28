@@ -2,12 +2,9 @@
 // pragma statement
 pragma solidity ^0.6.12;
 pragma experimental ABIEncoderV2;
-// import statements
-
-import "../external_contracts/provableAPI_0.6.sol";
 
 
-contract ProofOfExistence is usingProvable {
+contract ProofOfExistence {
 
     /*===============================
         TYPE DECLARATIONS
@@ -83,35 +80,6 @@ contract ProofOfExistence is usingProvable {
 
         // Increment proof counter as it's used as proof ids for future proofs too
         proofCounter++; 
-    }
-
-    // function __callback(string memory _result) public {
-    //     require(msg.sender == provable_cbAddress());
-    //     proofTimeStamp = _result;
-    //     emit LogNewTimeStamp(proofTimeStamp);
-    // }
-
-    function __callback(string memory _result) public {
-        require(msg.sender == provable_cbAddress());
-        proofTimeStamp = _result;
-        emit LogNewTimeStamp(proofTimeStamp);
-    }
-
-    function update() public payable {
-        emit LogNewProvableQuery("Provable query was sent, waiting for a response...");
-        provable_query("WolframAlpha", "timestamp now");
-    }
-
-    function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
-        uint8 i = 0;
-        while(i < 32 && _bytes32[i] != 0) {
-            i++;
-        }
-        bytes memory bytesArray = new bytes(i);
-        for (i = 0; i < 32 && _bytes32[i] != 0; i++) {
-            bytesArray[i] = _bytes32[i];
-        }
-        return string(bytesArray);
     }
 
     /*===============================
