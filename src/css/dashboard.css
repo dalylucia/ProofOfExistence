@@ -1,5 +1,5 @@
 .gallery {
-  /* display: none; */
+  display: none;
 }
 
 /* dropdown image preview */
@@ -76,6 +76,7 @@ font-weight: 500 !important;
 
 .empty {
   display: block;
+  margin-bottom: 10em;
 } 
 
 /* Font */
@@ -163,6 +164,17 @@ padding: 1rem;
 
 .card_image {
 border-bottom: 5px solid #7CE8DD;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+height: 250px;
+}
+
+.card_image img {
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%
 }
 
 .card_title {

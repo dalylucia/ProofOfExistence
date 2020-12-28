@@ -58,13 +58,6 @@ contract ProofOfExistence is usingProvable {
     event LogNewProvableQuery(string description);
     event LogNewTimeStamp(string timestamp);
 
-    /*===============================
-        CONSTRUCTOR
-    ================================*/
-
-    constructor() public {
-        // update(); // Update on contract creation...
-    }
 
     /*===============================
         FUNCTIONS
@@ -128,8 +121,10 @@ contract ProofOfExistence is usingProvable {
         return msg.sender.balance;
     }
 
-    function getTS() public view returns(uint256) {
-        return proofTimeStamp;
+    function getTS(uint _id) public view returns(uint256) {
+        if(msg.sender == proofs[_id].proofCreator) {
+            return proofs[_id].proofTimeStamp;
+        }
     }
 
     function getTotalOwnerProofs() public view returns (uint counter){
@@ -185,7 +180,7 @@ contract ProofOfExistence is usingProvable {
     }
     
     function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (uint256[] memory) {
-        _totalOwnerProofs ++;
+        
         
         uint256[] memory timestamps = new uint256[](_totalOwnerProofs);
         uint index = 0;
@@ -213,8 +208,12 @@ contract ProofOfExistence is usingProvable {
     }
 
     function getIPFS(uint _id) public view returns (string memory) {
-        return proofs[_id].proofIPFSHash;
+        if(msg.sender == proofs[_id].proofCreator) {
+            return proofs[_id].proofIPFSHash;
+        }
     }
+
+    
 
     function getTotalProofs() public view returns (uint ){
         return proofCounter;

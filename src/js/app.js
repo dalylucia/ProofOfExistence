@@ -2,6 +2,7 @@ App = {
   web3Provider: null,
   contracts: {},
   ipfsHash: null,
+  myTotalProofs: null,
   totalProofs: null,
   MyProofs: [],
 
@@ -66,20 +67,26 @@ App = {
         let Myhashes;
         let Mytimestamps;
         let Mytags;
-
+        let deployed;
         App.contracts.POE.deployed()
           .then((instance) => {
             deployed = instance;
             return deployed.getTotalOwnerProofs();
           }).then((result) => {
-            App.totalProofs = result.c["0"]
+            App.myTotalProofs = result.c["0"]
           }).then((result) => {
+            return deployed.getTotalProofs();
+          }).then((result) => {
+            App.totalProofs = result.c["0"]
+            
+          }).then((result) => {
+            console.log("my total proofs:" + App.myTotalProofs)
             console.log("total proofs:" + App.totalProofs)
             // get titles
             App.contracts.POE.deployed()
               .then((instance) => {
                 deployed = instance;
-                return deployed.getOwnerTitles(App.totalProofs);
+                return deployed.getOwnerTitles(App.myTotalProofs);
               }).then((result) => {
                 Mytitles = result
                 console.log("titles " + Mytitles)
@@ -89,7 +96,7 @@ App = {
             App.contracts.POE.deployed()
               .then((instance) => {
                 deployed = instance;
-                return deployed.getOwnerSummaries(App.totalProofs);
+                return deployed.getOwnerSummaries(App.myTotalProofs);
               }).then((result) => {
                 Mysummaries = result
                 console.log("summaries " + Mysummaries)
@@ -102,39 +109,44 @@ App = {
 
               for (var i = 0; i < App.totalProofs; i++) {
                 thishash = instance.getIPFS(i).then((result) => {
-                  Myhashes.push(result)
+                  if(result !="") {
+                    Myhashes.push(result)
+                  }
+                  
                 })
-
               }
             }).then((result) => {
-              
                 console.log("hashes " + Myhashes)
-              
-
             })
+
+
             Mytimestamps = ["",]
             //get timestamps
-            App.contracts.POE.deployed()
-              .then((instance) => {
-                deployed = instance;
-                return deployed.getOwnerTimestamps(App.totalProofs);
-              }).then((result) => {
-                Mytimestamps.push(result["0"].c[0])
-              
-                console.log("timestamps " + Mytimestamps)
-              })
+            App.contracts.POE.deployed().then(function (instance) {
+
+              for (var i = 0; i < App.totalProofs; i++) {
+                thishash = instance.getTS(i).then((result) => {
+                 
+                  if(result !=0) {
+                    Mytimestamps.push(result)
+                  }
+                })
+              }
+            }).then((result) => {
+                console.log("hashes " + Mytimestamps)
+            })
 
             //get tags
             App.contracts.POE.deployed()
               .then((instance) => {
                 deployed = instance;
-                return deployed.getOwnerTags(App.totalProofs);
+                return deployed.getOwnerTags(App.myTotalProofs);
               }).then((result) => {
                 Mytags = result
                 console.log("tags " + Mytags)
               }).then((result) => {
                   var i;
-                  for (i = 1; i <= App.totalProofs; i++) {
+                  for (i = 1; i <= App.myTotalProofs; i++) {
                     proof = [Mytitles[i], Myhashes[i], Mysummaries[i], Mytimestamps[i], Mytags[i]]
                     App.MyProofs.push(proof)
 
@@ -154,27 +166,24 @@ App = {
   },
 
   UNIXtoDate : function (unixTime) {
-    console.log(unixTime)
-    // date = new Date(parseInt(unixTime)).toLocaleDateString("en-US")
-    // time = new Date(parseInt(unixTime)).toLocaleTimeString("en-US")
-    // timestamp = date + " " + time
-    var timestamp = new Date(0); // The 0 there is the key, which sets the date to the epoch
+
+    var timestamp = new Date(0); 
     timestamp.setUTCSeconds(unixTime);
-    console.log(timestamp)
     return timestamp
   },
 
   generateProofs: function () {
     console.log(App.MyProofs)
     setTimeout(async function () {
-      if (App.totalProofs !== 0) {
+      if (App.myTotalProofs !== 0) {
 
         // hide/show elements
         document.getElementsByClassName("gallery")["0"].style.display = "block";
+        document.getElementsByClassName("gallery")["1"].style.display = "block";
         document.getElementsByClassName("empty")["0"].style.display = "none";
 
         var i;
-        for (i = 0; i < App.totalProofs; i++) {
+        for (i = 0; i < App.myTotalProofs; i++) {
 
           ListItem = document.createElement('li');
           ListItem.className = "cards_item"
@@ -184,10 +193,17 @@ App = {
           div2 = document.createElement('div');
           div1.className = "card_image"
           div2.className = "card_content"
-          img = document.createElement('img');
+          // img = document.createElement('img');
+
+          // if (App.MyProofs[i][1].includes(".jpg") || App.Proofs[i][1].includes(".png") || App.Proofs[i][1].includes(".jpeg")) {
           image_source = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
-          img.src = image_source
-          div1.appendChild(img)
+         
+          // img.onerror = "this.onerror=null;this.src='../images/default_proof.png';"
+          // img.src = image_source
+          img = "<img src ='" + image_source +"' onerror='imgError(this);'>" 
+          
+          // div1.appendChild(img)
+          div1.insertAdjacentHTML( 'beforeend', img );
 
           h2 = document.createElement('h2');
           h2.className = "card_title"
@@ -259,12 +275,11 @@ App = {
           mainDiv.appendChild(div1)
           mainDiv.appendChild(div2)
           ListItem.appendChild(mainDiv)
-          // console.log(ListItem)
           document.getElementsByClassName("cards")["0"].appendChild(ListItem)
 
         }
       }
-    }, 50);
+    }, 300);
 
 
   },
@@ -285,8 +300,13 @@ App = {
       }
 
     }
-    if (document.getElementById("text").value != "") {
+    if (listTags.length == 0) {
+      tags += document.getElementById("text").value
+    } else {
       tags += "," + document.getElementById("text").value
+    }
+    if (document.getElementById("text").value != "") {
+      
     }
 
     try {
@@ -422,3 +442,15 @@ var accountInterval = setInterval(function () {
     }
   }
 }, 1);
+
+
+function imgError(image) {
+  image.onerror = "";
+  image.src = "../images/default_proof.png";
+  return true;
+}
+setInterval(function () {
+  ethereum.on('accountsChanged', function (accounts) {
+    location.reload()
+  })
+}, 1000);
