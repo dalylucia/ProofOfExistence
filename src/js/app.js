@@ -161,6 +161,7 @@ App = {
 
         // hide/show elements
         document.getElementsByClassName("gallery")["0"].style.display = "block";
+        document.getElementsByClassName("gallery")["1"].style.display = "block";
         document.getElementsByClassName("empty")["0"].style.display = "none";
 
         var i;

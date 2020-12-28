@@ -58,13 +58,6 @@ contract ProofOfExistence is usingProvable {
     event LogNewProvableQuery(string description);
     event LogNewTimeStamp(string timestamp);
 
-    /*===============================
-        CONSTRUCTOR
-    ================================*/
-
-    constructor() public {
-        // update(); // Update on contract creation...
-    }
 
     /*===============================
         FUNCTIONS
@@ -72,10 +65,6 @@ contract ProofOfExistence is usingProvable {
 
     // Add proof to the blockchain
     function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags, string memory _time) public {
-        // update timestamp
-        // update();
-
-        // proofTimeStamp = "2020";
 
         proofTimeStamp = _time;
     
