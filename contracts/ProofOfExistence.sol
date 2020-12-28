@@ -71,11 +71,13 @@ contract ProofOfExistence is usingProvable {
     ================================*/
 
     // Add proof to the blockchain
-    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags) public {
+    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags, string memory _time) public {
         // update timestamp
         // update();
 
-        proofTimeStamp = "2020";
+        // proofTimeStamp = "2020";
+
+        proofTimeStamp = _time;
     
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
