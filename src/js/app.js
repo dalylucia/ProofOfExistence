@@ -112,16 +112,15 @@ App = {
               
 
             })
-
-
-
+            Mytimestamps = ["",]
             //get timestamps
             App.contracts.POE.deployed()
               .then((instance) => {
                 deployed = instance;
                 return deployed.getOwnerTimestamps(App.totalProofs);
               }).then((result) => {
-                Mytimestamps = result
+                Mytimestamps.push(result["0"].c[0])
+              
                 console.log("timestamps " + Mytimestamps)
               })
 
@@ -154,6 +153,17 @@ App = {
 
   },
 
+  UNIXtoDate : function (unixTime) {
+    console.log(unixTime)
+    // date = new Date(parseInt(unixTime)).toLocaleDateString("en-US")
+    // time = new Date(parseInt(unixTime)).toLocaleTimeString("en-US")
+    // timestamp = date + " " + time
+    var timestamp = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    timestamp.setUTCSeconds(unixTime);
+    console.log(timestamp)
+    return timestamp
+  },
+
   generateProofs: function () {
     console.log(App.MyProofs)
     setTimeout(async function () {
@@ -175,10 +185,7 @@ App = {
           div1.className = "card_image"
           div2.className = "card_content"
           img = document.createElement('img');
-          // https://gateway.ipfs.io/ipfs/QmbhwGwG7YyZtpnhNwtWmr75H7Ct8tQ7oV6xDPUxyFJeio
-          // gateway.ipfs.io/ipfs/QmZwyEvzRxJBEffE9XUnZoEMM1JqZWyXJpEbdUAXsJn3Cj
           image_source = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
-          // console.log(image_source)
           img.src = image_source
           div1.appendChild(img)
 
@@ -204,7 +211,9 @@ App = {
 
           p5 = document.createElement('p');
           p5.className = "card_text hashNumber"
-          p5.innerHTML = App.MyProofs[i][3]
+
+         
+          p5.innerHTML = App.UNIXtoDate(App.MyProofs[i][3])
 
           p6 = document.createElement('p');
           p6.className = "card_text smalltext"
@@ -212,11 +221,24 @@ App = {
 
 
           // for loop creating tags
-          span1 = document.createElement('span');
-          span1.className = "card_text tag"
-          span1.innerHTML = App.MyProofs[i][4]
+          tags = App.MyProofs[i][4].split(',');
+          spans = []
+          var p;
+          for(p=0; p<tags.length; p++) {
+            temp_span = document.createElement('span');
+            temp_span.className = "card_text tag"
+            temp_span.innerHTML = tags[p]
+            spans.push(temp_span)
+          }
 
-
+          button = document.createElement('button');
+          
+          button.className = "btn card_btn"
+          link = document.createElement('a');
+          link.innerHTML = "View on IPFS"
+          link.href = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
+          button.appendChild(link)
+     
 
           div2.appendChild(h2)
           div2.appendChild(p1)
@@ -226,10 +248,13 @@ App = {
           div2.appendChild(p5)
           div2.appendChild(p6)
           // for loop appending 
-          div2.appendChild(span1)
-          // div2.appendChild(span2)
-          // end for loop
-          // div2.appendChild(button)
+          
+          var s;
+          for (s=0; s<spans.length; s++) {
+            div2.appendChild(spans[s])
+          }
+   
+          div2.appendChild(button)
 
           mainDiv.appendChild(div1)
           mainDiv.appendChild(div2)
@@ -237,12 +262,9 @@ App = {
           // console.log(ListItem)
           document.getElementsByClassName("cards")["0"].appendChild(ListItem)
 
-
-
-
         }
       }
-    }, 3000);
+    }, 50);
 
 
   },
@@ -270,8 +292,8 @@ App = {
     try {
       App.contracts.POE.deployed().then(function (i) {
         // get timestamp
-        var t = App.getTime().toString();
-        i.submitProof(hash, title, summary, tags, t, {
+  
+        i.submitProof(hash, title, summary, tags, {
             from: web3.eth.accounts[0],
             gaslimit: 250000
           })

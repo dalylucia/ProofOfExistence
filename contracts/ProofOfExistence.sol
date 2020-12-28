@@ -15,7 +15,7 @@ contract ProofOfExistence is usingProvable {
 
     address proofCreator;
     uint16 proofId;
-    string public proofTimeStamp;
+    uint256 public proofTimeStamp;
     string proofTitle;
     string proofIPFSHash;
     string proofSummary;
@@ -29,7 +29,7 @@ contract ProofOfExistence is usingProvable {
     struct Proof {
         address proofCreator;
         uint proofId;
-        string proofTimeStamp;
+        uint256 proofTimeStamp;
         string proofTitle;
         string proofIPFSHash;
         string proofSummary;
@@ -71,13 +71,9 @@ contract ProofOfExistence is usingProvable {
     ================================*/
 
     // Add proof to the blockchain
-    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags, string memory _time) public {
-        // update timestamp
-        // update();
+    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags) public {
 
-        // proofTimeStamp = "2020";
-
-        proofTimeStamp = _time;
+        proofTimeStamp = block.timestamp;
     
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
@@ -102,28 +98,28 @@ contract ProofOfExistence is usingProvable {
     //     emit LogNewTimeStamp(proofTimeStamp);
     // }
 
-    function __callback(string memory _result) public {
-        require(msg.sender == provable_cbAddress());
-        proofTimeStamp = _result;
-        emit LogNewTimeStamp(proofTimeStamp);
-    }
+    // function __callback(uint256 _result) public {
+    //     require(msg.sender == provable_cbAddress());
+    //     proofTimeStamp = _result;
+    //     emit LogNewTimeStamp(proofTimeStamp);
+    // }
 
-    function update() public payable {
-        emit LogNewProvableQuery("Provable query was sent, waiting for a response...");
-        provable_query("WolframAlpha", "timestamp now");
-    }
+    // function update() public payable {
+    //     emit LogNewProvableQuery("Provable query was sent, waiting for a response...");
+    //     provable_query("WolframAlpha", "timestamp now");
+    // }
 
-    function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
-        uint8 i = 0;
-        while(i < 32 && _bytes32[i] != 0) {
-            i++;
-        }
-        bytes memory bytesArray = new bytes(i);
-        for (i = 0; i < 32 && _bytes32[i] != 0; i++) {
-            bytesArray[i] = _bytes32[i];
-        }
-        return string(bytesArray);
-    }
+    // function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
+    //     uint8 i = 0;
+    //     while(i < 32 && _bytes32[i] != 0) {
+    //         i++;
+    //     }
+    //     bytes memory bytesArray = new bytes(i);
+    //     for (i = 0; i < 32 && _bytes32[i] != 0; i++) {
+    //         bytesArray[i] = _bytes32[i];
+    //     }
+    //     return string(bytesArray);
+    // }
 
     /*===============================
         GETTER FUNCTIONS
@@ -132,7 +128,7 @@ contract ProofOfExistence is usingProvable {
         return msg.sender.balance;
     }
 
-    function getTS() public view returns(string memory) {
+    function getTS() public view returns(uint256) {
         return proofTimeStamp;
     }
 
@@ -188,10 +184,10 @@ contract ProofOfExistence is usingProvable {
         return hashes;
     }
     
-    function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (string[] memory) {
+    function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (uint256[] memory) {
         _totalOwnerProofs ++;
         
-        string[] memory timestamps = new string[](_totalOwnerProofs);
+        uint256[] memory timestamps = new uint256[](_totalOwnerProofs);
         uint index = 0;
         for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
@@ -216,27 +212,27 @@ contract ProofOfExistence is usingProvable {
         return tags;
     }
 
-    function getIPFS(uint _id) public view returns (string memory x) {
+    function getIPFS(uint _id) public view returns (string memory) {
         return proofs[_id].proofIPFSHash;
     }
 
-    function getTotalProofs() public view returns (uint x){
+    function getTotalProofs() public view returns (uint ){
         return proofCounter;
     }
 
-    function getOwner(uint _id) public view returns (address x) {
+    function getOwner(uint _id) public view returns (address) {
         return proofs[_id].proofCreator;
     }
 
-    function getDescription(uint _id) public view returns (string memory x) {
+    function getDescription(uint _id) public view returns (string memory) {
         return proofs[_id].proofSummary;
     }
 
-    function getTitle(uint _id) public view returns (string memory x) {
+    function getTitle(uint _id) public view returns (string memory) {
         return proofs[_id].proofTitle;
     }
 
-    function getTags(uint _id) public view returns (string memory x) {
+    function getTags(uint _id) public view returns (string memory) {
         return proofs[_id].proofTags;
     }
 }
