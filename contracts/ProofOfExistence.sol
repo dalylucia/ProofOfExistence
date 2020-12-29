@@ -12,7 +12,7 @@ contract ProofOfExistence {
 
     address proofCreator;
     uint16 proofId;
-    string public proofTimeStamp;
+    uint256 public proofTimeStamp;
     string proofTitle;
     string proofIPFSHash;
     string proofSummary;
@@ -26,7 +26,7 @@ contract ProofOfExistence {
     struct Proof {
         address proofCreator;
         uint proofId;
-        string proofTimeStamp;
+        uint256 proofTimeStamp;
         string proofTitle;
         string proofIPFSHash;
         string proofSummary;
@@ -61,9 +61,9 @@ contract ProofOfExistence {
     ================================*/
 
     // Add proof to the blockchain
-    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags, string memory _time) public {
+    function submitProof(string memory _ipfs, string memory _title, string memory _summary, string memory _tags) public {
 
-        proofTimeStamp = _time;
+        proofTimeStamp = block.timestamp;
     
         // Adding proof to proofs mapping
         proofs[proofCounter] = Proof(
@@ -89,8 +89,10 @@ contract ProofOfExistence {
         return msg.sender.balance;
     }
 
-    function getTS() public view returns(string memory) {
-        return proofTimeStamp;
+    function getTS(uint _id) public view returns(uint256) {
+        if(msg.sender == proofs[_id].proofCreator) {
+            return proofs[_id].proofTimeStamp;
+        }
     }
 
     function getTotalOwnerProofs() public view returns (uint counter){
@@ -145,10 +147,10 @@ contract ProofOfExistence {
         return hashes;
     }
     
-    function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (string[] memory) {
-        _totalOwnerProofs ++;
+    function getOwnerTimestamps(uint _totalOwnerProofs) public view returns (uint256[] memory) {
         
-        string[] memory timestamps = new string[](_totalOwnerProofs);
+        
+        uint256[] memory timestamps = new uint256[](_totalOwnerProofs);
         uint index = 0;
         for (uint i =0; i < proofCounter; i++) {
             if(msg.sender == proofs[i].proofCreator) {
@@ -173,27 +175,31 @@ contract ProofOfExistence {
         return tags;
     }
 
-    function getIPFS(uint _id) public view returns (string memory x) {
-        return proofs[_id].proofIPFSHash;
+    function getIPFS(uint _id) public view returns (string memory) {
+        if(msg.sender == proofs[_id].proofCreator) {
+            return proofs[_id].proofIPFSHash;
+        }
     }
 
-    function getTotalProofs() public view returns (uint x){
+    
+
+    function getTotalProofs() public view returns (uint ){
         return proofCounter;
     }
 
-    function getOwner(uint _id) public view returns (address x) {
+    function getOwner(uint _id) public view returns (address) {
         return proofs[_id].proofCreator;
     }
 
-    function getDescription(uint _id) public view returns (string memory x) {
+    function getDescription(uint _id) public view returns (string memory) {
         return proofs[_id].proofSummary;
     }
 
-    function getTitle(uint _id) public view returns (string memory x) {
+    function getTitle(uint _id) public view returns (string memory) {
         return proofs[_id].proofTitle;
     }
 
-    function getTags(uint _id) public view returns (string memory x) {
+    function getTags(uint _id) public view returns (string memory) {
         return proofs[_id].proofTags;
     }
 }
