@@ -80,8 +80,8 @@ App = {
             App.totalProofs = result.c["0"]
             
           }).then((result) => {
-            console.log("my total proofs:" + App.myTotalProofs)
-            console.log("total proofs:" + App.totalProofs)
+            // console.log("my total proofs:" + App.myTotalProofs)
+            // console.log("total proofs:" + App.totalProofs)
             // get titles
             App.contracts.POE.deployed()
               .then((instance) => {
@@ -89,7 +89,7 @@ App = {
                 return deployed.getOwnerTitles(App.myTotalProofs);
               }).then((result) => {
                 Mytitles = result
-                console.log("titles " + Mytitles)
+                // console.log("titles " + Mytitles)
               })
 
             //get summaries
@@ -99,7 +99,7 @@ App = {
                 return deployed.getOwnerSummaries(App.myTotalProofs);
               }).then((result) => {
                 Mysummaries = result
-                console.log("summaries " + Mysummaries)
+                // console.log("summaries " + Mysummaries)
               })
 
             //get hashes
@@ -116,7 +116,7 @@ App = {
                 })
               }
             }).then((result) => {
-                console.log("hashes " + Myhashes)
+                // console.log("hashes " + Myhashes)
             })
 
 
@@ -133,7 +133,7 @@ App = {
                 })
               }
             }).then((result) => {
-                console.log("hashes " + Mytimestamps)
+                // console.log("hashes " + Mytimestamps)
             })
 
             //get tags
@@ -143,7 +143,7 @@ App = {
                 return deployed.getOwnerTags(App.myTotalProofs);
               }).then((result) => {
                 Mytags = result
-                console.log("tags " + Mytags)
+                // console.log("tags " + Mytags)
               }).then((result) => {
                   var i;
                   for (i = 1; i <= App.myTotalProofs; i++) {
@@ -173,13 +173,12 @@ App = {
   },
 
   generateProofs: function () {
-    console.log(App.MyProofs)
+   
     setTimeout(async function () {
       if (App.myTotalProofs !== 0) {
 
         // hide/show elements
         document.getElementsByClassName("gallery")["0"].style.display = "block";
-        document.getElementsByClassName("gallery")["1"].style.display = "block";
         document.getElementsByClassName("empty")["0"].style.display = "none";
 
         var i;
@@ -244,6 +243,7 @@ App = {
             temp_span = document.createElement('span');
             temp_span.className = "card_text tag"
             temp_span.innerHTML = tags[p]
+            // ListItem.className += " " + tags[p]
             spans.push(temp_span)
           }
 
@@ -282,6 +282,10 @@ App = {
     }, 300);
 
 
+  },
+
+  search: function() {
+    console.log("YESSS")
   },
 
   saveProofToBlockchain: function () {
@@ -454,3 +458,4 @@ setInterval(function () {
     location.reload()
   })
 }, 1000);
+
