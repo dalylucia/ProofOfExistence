@@ -248,12 +248,13 @@ App = {
           }
 
           button = document.createElement('button');
-          
-          button.className = "btn card_btn"
           link = document.createElement('a');
-          link.innerHTML = "View on IPFS"
+          button.className = "btn card_btn"
+          
+          button.innerHTML = "View on IPFS"
           link.href = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
-          button.appendChild(link)
+          link.style = "text-decoration:none;"
+          link.appendChild(button)
      
 
           div2.appendChild(h2)
@@ -270,7 +271,7 @@ App = {
             div2.appendChild(spans[s])
           }
    
-          div2.appendChild(button)
+          div2.appendChild(link)
 
           mainDiv.appendChild(div1)
           mainDiv.appendChild(div2)
