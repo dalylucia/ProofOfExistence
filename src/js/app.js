@@ -53,14 +53,12 @@ App = {
     App.loadProofs();
   },
 
-
-
-
+  /**
+  Get proofs from blockchain
+  **/
   loadProofs: function () {
     if (window.location.href == "http://localhost:3000/dashboard.html") {
       setTimeout(async function () {
-
-        // // get total proofs
 
         let Mytitles;
         let Mysummaries;
@@ -78,7 +76,7 @@ App = {
             return deployed.getTotalProofs();
           }).then((result) => {
             App.totalProofs = result.c["0"]
-            
+
           }).then((result) => {
             // console.log("my total proofs:" + App.myTotalProofs)
             // console.log("total proofs:" + App.totalProofs)
@@ -103,37 +101,37 @@ App = {
               })
 
             //get hashes
-            Myhashes = ["",]
+            Myhashes = ["", ]
 
             App.contracts.POE.deployed().then(function (instance) {
 
               for (var i = 0; i < App.totalProofs; i++) {
                 thishash = instance.getIPFS(i).then((result) => {
-                  if(result !="") {
+                  if (result != "") {
                     Myhashes.push(result)
                   }
-                  
+
                 })
               }
             }).then((result) => {
-                // console.log("hashes " + Myhashes)
+              // console.log("hashes " + Myhashes)
             })
 
 
-            Mytimestamps = ["",]
+            Mytimestamps = ["", ]
             //get timestamps
             App.contracts.POE.deployed().then(function (instance) {
 
               for (var i = 0; i < App.totalProofs; i++) {
                 thishash = instance.getTS(i).then((result) => {
-                 
-                  if(result !=0) {
+
+                  if (result != 0) {
                     Mytimestamps.push(result)
                   }
                 })
               }
             }).then((result) => {
-                // console.log("hashes " + Mytimestamps)
+              // console.log("hashes " + Mytimestamps)
             })
 
             //get tags
@@ -145,19 +143,19 @@ App = {
                 Mytags = result
                 // console.log("tags " + Mytags)
               }).then((result) => {
-                  var i;
-                  for (i = 1; i <= App.myTotalProofs; i++) {
-                    proof = [Mytitles[i], Myhashes[i], Mysummaries[i], Mytimestamps[i], Mytags[i]]
-                    App.MyProofs.push(proof)
+                var i;
+                for (i = 1; i <= App.myTotalProofs; i++) {
+                  proof = [Mytitles[i], Myhashes[i], Mysummaries[i], Mytimestamps[i], Mytags[i]]
+                  App.MyProofs.push(proof)
 
-                  }
+                }
 
               })
 
           }).then((result) => {
-              
+
             App.generateProofs()
-          
+
           })
       }, 20);
     }
@@ -165,20 +163,27 @@ App = {
 
   },
 
-  UNIXtoDate : function (unixTime) {
+  /**
+  Convert UNIX time
+  **/
+  UNIXtoDate: function (unixTime) {
 
-    var timestamp = new Date(0); 
+    var timestamp = new Date(0);
     timestamp.setUTCSeconds(unixTime);
     return timestamp
   },
 
+  /**
+  Fetch proofs and generate UI
+  **/
   generateProofs: function () {
-   
+
     setTimeout(async function () {
       if (App.myTotalProofs !== 0) {
 
         // hide/show elements
         document.getElementsByClassName("gallery")["0"].style.display = "block";
+        document.getElementsByClassName("gallery")["1"].style.display = "block";
         document.getElementsByClassName("empty")["0"].style.display = "none";
 
         var i;
@@ -192,17 +197,12 @@ App = {
           div2 = document.createElement('div');
           div1.className = "card_image"
           div2.className = "card_content"
-          // img = document.createElement('img');
 
-          // if (App.MyProofs[i][1].includes(".jpg") || App.Proofs[i][1].includes(".png") || App.Proofs[i][1].includes(".jpeg")) {
           image_source = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
-         
-          // img.onerror = "this.onerror=null;this.src='../images/default_proof.png';"
-          // img.src = image_source
-          img = "<img src ='" + image_source +"' onerror='imgError(this);'>" 
-          
-          // div1.appendChild(img)
-          div1.insertAdjacentHTML( 'beforeend', img );
+
+          img = "<img src ='" + image_source + "' onerror='imgError(this);'>"
+
+          div1.insertAdjacentHTML('beforeend', img);
 
           h2 = document.createElement('h2');
           h2.className = "card_title"
@@ -227,7 +227,7 @@ App = {
           p5 = document.createElement('p');
           p5.className = "card_text hashNumber"
 
-         
+
           p5.innerHTML = App.UNIXtoDate(App.MyProofs[i][3])
 
           p6 = document.createElement('p');
@@ -239,24 +239,22 @@ App = {
           tags = App.MyProofs[i][4].split(',');
           spans = []
           var p;
-          for(p=0; p<tags.length; p++) {
+          for (p = 0; p < tags.length; p++) {
             temp_span = document.createElement('span');
             temp_span.className = "card_text tag"
             temp_span.innerHTML = tags[p]
-            // ListItem.className += " " + tags[p]
             spans.push(temp_span)
           }
 
           button = document.createElement('button');
           link = document.createElement('a');
           button.className = "btn card_btn"
-          
+
           button.innerHTML = "View on IPFS"
           link.href = "https://gateway.ipfs.io/ipfs/" + App.MyProofs[i][1]
           link.style = "text-decoration:none;"
-          link.appendChild(button)
-     
 
+          link.appendChild(button)
           div2.appendChild(h2)
           div2.appendChild(p1)
           div2.appendChild(p2)
@@ -264,13 +262,13 @@ App = {
           div2.appendChild(p4)
           div2.appendChild(p5)
           div2.appendChild(p6)
-          // for loop appending 
           
+          // for loop appending 
           var s;
-          for (s=0; s<spans.length; s++) {
+          for (s = 0; s < spans.length; s++) {
             div2.appendChild(spans[s])
           }
-   
+
           div2.appendChild(link)
 
           mainDiv.appendChild(div1)
@@ -285,12 +283,14 @@ App = {
 
   },
 
-  search: function() {
+  search: function () {
     console.log("YESSS")
   },
 
+  /**
+  Saves proof to blockchain.
+  **/
   saveProofToBlockchain: function () {
-
     title = document.getElementById("proofTitle").value
     hash = App.ipfsHash
     summary = document.getElementById("proofSummary").value
@@ -310,14 +310,13 @@ App = {
     } else {
       tags += "," + document.getElementById("text").value
     }
-    if (document.getElementById("text").value != "") {
-      
+    if (tags.charAt(tags.length - 1) == ",") {
+      tags = tags.slice(0, -1)
     }
 
     try {
       App.contracts.POE.deployed().then(function (i) {
-        // get timestamp
-  
+
         i.submitProof(hash, title, summary, tags, {
             from: web3.eth.accounts[0],
             gaslimit: 250000
@@ -355,13 +354,14 @@ App = {
           setTimeout(function () {
             window.location = "dashboard.html";
           }, 3000)
-
         }
-
       });
     });
   },
 
+  /**
+  Gets IPFS hash
+  **/
   getIPFShash: function () {
     const ipfs = window.IpfsHttpClient('ipfs.infura.io', '5001', {
       protocol: 'https'
@@ -393,7 +393,9 @@ $(function () {
   });
 });
 
-
+/**
+Check Metamask and monitor account changes
+**/
 function toHome() {
   var accs = web3.eth.accounts.length
   if (web3.currentProvider.isMetamask === false) {
@@ -408,13 +410,7 @@ function toHome() {
 
 
 /**
-  Bootstrap Alerts -
-  Function Name - showalert()
-  Inputs - message,alerttype
-  Example - showalert("Invalid Login","alert-error")
-  Types of alerts -- "alert-error","alert-success","alert-info","alert-warning"
-  Required - You only need to add a alert_placeholder div in your html page wherever you want to display these alerts "<div id="alert_placeholder"></div>"
-  Written On - 14-Jun-2013
+  Bootstrap Alerts
 **/
 function showalert(message, alerttype) {
 
@@ -448,7 +444,9 @@ var accountInterval = setInterval(function () {
   }
 }, 1);
 
-
+/**
+Sets image to default if uploaded doc is not a graphic.
+**/
 function imgError(image) {
   image.onerror = "";
   image.src = "../images/default_proof.png";
@@ -458,5 +456,4 @@ setInterval(function () {
   ethereum.on('accountsChanged', function (accounts) {
     location.reload()
   })
-}, 1000);
-
+}, 2000);

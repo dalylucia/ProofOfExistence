@@ -1,74 +1,50 @@
-const PoE = artifacts.require("./BlockProof.sol");
-const crypto = require("crypto");
-const chai = require("chai");
+var PoE = artifacts.require("./ProofOfExistence.sol");
 
-const id1 = 1;
-const doc1 = "Some document"; 
-const docHash1 = sha256AsHexString(doc1);
+contract('ProofOfExistence', function (accounts) {
 
-const id2 = 2;
-const doc2 = "Some other document";
-const docHash2 = sha256AsHexString(doc2);
+	// Can the dApp be delployed
+	it("dApp can be deployed.", async () => {
+		let proofContractInstance = await PoE.deployed();
+		return assert.notEqual(proofContractInstance, undefined, "Proof that the dApp can be deployed.");
+	});
 
-function sha256AsHexString(doc) {
-    return "0x" + crypto.createHash("sha256").update(doc, "utf8").digest("hex");
-}
+	// ProofCount is incremented when a proof is added
+	it("Can upload new piece of proof and update proofCounter", async () => {
+		let proofContractInstance = await PoE.deployed();
+		await proofContractInstance.submitProof("ipfshash", "proofTitle", "proofSummary", "proofTags");
+		let totalProofs = await proofContractInstance.getTotalProofs.call();
+		return assert.equal(totalProofs, 1, "Total proofs incremented by 1.");
+	});
 
-describe("Proof Of Existence", () => {
-    contract("fresh contract: happy path", () => {
-        it("should provide proof that a hash was submitted with a given ID", async () => {
-            const poe = await PoE.deployed();
-            await poe.notarizeHash(id1, docHash1);
-            const valid = await poe.doesProofExist(id1, docHash1);
-            chai.expect(valid).is.true;
-        });
-    });
-    
-    contract("fresh contract: happy path", () => {
-        it("should accept multiple hashes if IDs are different", async () => {
-            const poe = await PoE.deployed();
-            await poe.notarizeHash(id1, docHash1);
-            await poe.notarizeHash(id2, docHash2);
-            const valid1 = await poe.doesProofExist(id1, docHash1);
-            const valid2 = await poe.doesProofExist(id2, docHash2);
-        
-            chai.expect(valid1).is.true;
-            chai.expect(valid2).is.true;
-        });
-    });
+	// Can upload new document with correct owner
+	it("Can upload new document with correct owner", async () => {
+		let proofContractInstance = await PoE.deployed();
+		let proofOwner = await proofContractInstance.getOwner(0);
+		return assert.equal(proofOwner, accounts[0], "Owner of first proof belongs to first account.");
+	});
 
-    contract("fresh contract: fail proof", () => {
-        it("should fail proof if the submitted hash is different from the supplied one for the same ID", async () => {
-            const poe = await PoE.deployed();
-            await poe.notarizeHash(id1, docHash1);
-            const valid = await poe.doesProofExist(id1, docHash2);
+	// Can not be destroyed by accounts other than the owner
+	it("Can not be destroyed by accounts other than the owner.", async () => {
+		let proofContractInstance = await PoE.deployed();
+		try {
+			await proofContractInstance.destroy({
+				from: accounts[1]
+			});
+		} catch (error) {
+			return assert.isTrue(true, "Proof contract has not been destroyed.");
+		}
+		return assert.isTrue(false, "Proof contract has been destroyed by non-owner.");
+	});
 
-            chai.expect(valid).is.false;
-        });
+	// Hash can be generated
+	it("Hash can be generated.", async () => {
+		let proofContractInstance = await PoE.deployed();
+		
+		await proofContractInstance.submitProof("ipfshash", "proofTitle", "proofSummary", "proofTags");
 
-        it("should fail proof if no hash was submitted for an ID", async () => {
-            const poe = await PoE.deployed();
-            const valid = await poe.doesProofExist(id2, docHash1);
+		let hash = await proofContractInstance.getIPFS(0);
 
-            chai.expect(valid).is.false;
-        });
-    });
-
-    contract("fresh contract: no overwrite", () => {
-        it("should reject a hash if one is already stored for the supplied id", async () => {
-            const poe = await PoE.deployed();
-            await poe.notarizeHash(id1, docHash1);
-            chai.expect(poe.notarizeHash.bind(poe, id1, docHash1)).to.throw;
-        });
-    });
-
-    contract("fresh contract: only owner", (accounts) => {
-        // contract is created from accounts[0]
-        it("should only allow contract creator to add hashes", async () => {
-            const poe = await PoE.deployed();
-            await poe.notarizeHash(id1, docHash1, {from: accounts[0]});
-            chai.expect(poe.notarizeHash.bind(poe, id2, docHash2, {from: accounts[1]})).to.throw;
-        });
-    });
+		return assert.equal(hash, "ipfshash", "Successfully generated hash.");
+	});
 
 });

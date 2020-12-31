@@ -1,0 +1,107 @@
+https://rinkeby.etherscan.io/address/0x7502BEAebB090b78205E32EE2dBAdF00d79A97dE
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > block number:        7812568
+   > block timestamp:     1609415948
+   > account:             0x7502BEAebB090b78205E32EE2dBAdF00d79A97dE
+   > balance:             2.999566349
+   > gas used:            205035 (0x320eb)
+   > gas price:           2 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00041007 ETH
+
+   -------------------------------------
+   > Total cost:          0.00041007 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'ProofOfExistence'
+   ----------------------------
+   > block number:        7812570
+   > block timestamp:     1609415998
+   > account:             0x7502BEAebB090b78205E32EE2dBAdF00d79A97dE
+   > balance:             2.996259377
+   > gas used:            1626126 (0x18d00e)
+   > gas price:           2 gwei
+   > value sent:          0 ETH
+   > total cost:          0.003252252 ETH
+
+   -------------------------------------
+   > Total cost:         0.003252252 ETH
+
+
+Summary
+=======
+> Total deployments:   2
+> Final cost:          0.003662322 ETH
+
+
+
+
+
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 10000000 (0x989680)
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0x7ed8acb07962a43b6394e3645daf662614bdf0907f8ca676f7ef571f0787172e
+   > Blocks: 1            Seconds: 17
+   > contract address:    0x5eF1E010C5e3CDAfaaadB0fb53a06EDF7AE855ca
+   > block number:        7812574
+   > block timestamp:     1609416028
+   > account:             0x7502BEAebB090b78205E32EE2dBAdF00d79A97dE
+   > balance:             2.995575719
+   > gas used:            220035 (0x35b83)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0044007 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.0044007 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'ProofOfExistence'
+   ----------------------------
+   > transaction hash:    0xd22194569f68fa880e27064e2a4315563920b77cbfcb177e008faf903e7d9111
+   > Blocks: 2            Seconds: 22
+   > contract address:    0x73dBF2d239FF769C75bAE174C4c1Cdd0cCe93B69
+   > block number:        7812577
+   > block timestamp:     1609416073
+   > account:             0x7502BEAebB090b78205E32EE2dBAdF00d79A97dE
+   > balance:             2.961689999
+   > gas used:            1651926 (0x1934d6)
+   > gas price:           20 gwei
+   > value sent:          0 ETH
+   > total cost:          0.03303852 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.03303852 ETH
+
+
+Summary
+=======
+> Total deployments:   2
+> Final cost:          0.03743922 ETH

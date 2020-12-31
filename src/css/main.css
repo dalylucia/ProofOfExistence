@@ -1392,8 +1392,8 @@ section.empty-proofs {
 
 .button-center {
     text-align: center;
-    display: block;
-    margin: auto;
+    display: block !important;
+    margin: auto !important;
 }
 
 .button:active {
@@ -1766,11 +1766,17 @@ main {
 	}
 }
 
+.center {
+	display: block;
+	margin: auto;
+}
+
 .site-footer {
 	position: relative;
 	font-size: 14px;
 	line-height: 20px;
-	letter-spacing: 0px
+	letter-spacing: 0px;
+	margin-top: 100px;
 }
 
 .site-footer::before {

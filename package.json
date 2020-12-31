@@ -1,5 +1,5 @@
 {
-  "name": "pet-shop",
+  "name": "ProofofExistence",
   "version": "1.0.0",
   "description": "",
   "main": "truffle.js",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^3.1.0",
+    "@truffle/hdwallet-provider": "^1.2.1",
     "chai": "^4.2.0",
     "crypto": "^1.0.1",
     "ipfs-api": "^26.1.2",
