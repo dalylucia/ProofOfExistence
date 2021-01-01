@@ -19,7 +19,7 @@
 #### What is Proof of Existence and how does it work? <a name="introduction"></a>
 The Proof of Existence dApp allows users to verify the existence of a document by uploading it via the dApp UI and storing it on the blockchain. The upload is stored on an [Infura](https://infura.io/) IPFS (Inter-Planetary File System — a decentralized file storage network) and its IPFS reference hash and its corresponding details (Title, Summary, Tags) is stored immutably on the blockchain.
 
-The user is able to view and search for the uploads that they have created in their dashboard, which looks like the below:
+[Link to demo]()
 
 #### Technical Requirements <a name="tech"></a>
 
@@ -97,9 +97,6 @@ Once the file has been uploaded and the hash from the IPFS has been generated, c
 
 
 A summary of the proof will be displayed in a card format, as seen below. The document can be viewed in the IPFS by clicking on the `VIEW ON IPFS` button. The user can also search for a proof via the search button.
-
-<img src="./src/images/card.png" alt="card" style="width:300px; display:block;margin:auto;"/>
-<br>
 
 The dApp will recognise Account changes and refresh the page to reflect that account holder's uploads and account address at the top of the screen. 
 

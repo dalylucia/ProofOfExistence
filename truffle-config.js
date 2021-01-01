@@ -1,6 +1,3 @@
-const HDWalletProvider = require("@truffle/hdwallet-provider");
-const mnemonic = "orange apple banana ... ";
-
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // for more about customizing your Truffle configuration!
